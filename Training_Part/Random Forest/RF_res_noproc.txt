@@ -1,0 +1,1 @@
+0.840409 0.043313 0.900000 0.877500 0.049989 0.910000 {'min_samples_leaf': 1, 'max_features': 1, 'bootstrap': False, 'n_estimators': 50, 'max_depth': None, 'min_samples_split': 10, 'criterion': 'gini'}
