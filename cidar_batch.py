@@ -6,7 +6,7 @@ import glob
 import os
 
 from feature_extraction import FeatureExtraction
-# from classification import Classify
+from classification import Classify
 
 # Variabel Konstan
 JENIS_SEL_DARAH_PUTIH = 5
@@ -56,7 +56,7 @@ class GUI(Frame):
         
         tkvar = StringVar(self.parent)
         
-        choices = { 'Decision Tree','kNN','Naive Bayes','Neural Network','Random Forest', 'SVM'}
+        choices = { 'Decision Tree','kNN','Naive Bayes','Random Forest', 'SVM'}
         tkvar.set('Decision Tree') # set the default option
         
         popupMenu = OptionMenu(mainframe, tkvar, *choices)
@@ -94,9 +94,22 @@ class GUI(Frame):
 
     def olahBanyak(self, lblJumlah, lblB, lblE, lblL, lblM, lblN):
         if self.folderCitra != '':
-            #TODO Buat fungsi Klasifikasi
-            berkas = self.fol
-
+            berkas = self.folderCitra
+            clf = Classify()
+            hasil_batch = clf.klasifikasiCitraBanyak(berkas, self.kecerdasan)
+            bas = hasil_batch.count(0)
+            eos = hasil_batch.count(1)
+            lim = hasil_batch.count(2)
+            mon = hasil_batch.count(3)
+            net = hasil_batch.count(4)
+            banyak = len(hasil_batch)
+            lblJumlah.config(text = "Jumlah Citra: " + str(banyak))
+            lblB.config(text = "Jumlah Basofil: " + str(bas) + " -> " + str(float(bas/banyak)))
+            lblE.config(text = "Jumlah Eosinofil: " + str(eos) + " -> " + str(float(eos/banyak)))
+            lblL.config(text = "Jumlah Limfosit: " + str(lim) + " -> " + str(float(lim/banyak)))
+            lblM.config(text = "Jumlah Monosit: " + str(mon) + " -> " + str(float(mon/banyak)))
+            lblN.config(text = "Jumlah Netrofil: " + str(net) + " -> " + str(float(net/banyak)))
+            
     def tangkapCitraSatuan(self):
         ftypes = [('Portable Network Graphics', '*.png'), ('JPEG', '*.jpg')]
         dlg = filedialog.Open(self, filetypes=ftypes)
