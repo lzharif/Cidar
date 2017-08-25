@@ -1,3 +1,7 @@
+import glob
+from os import listdir
+from os.path import isfile, join
+
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.decomposition import KernelPCA
@@ -13,6 +17,7 @@ from feature_extraction import FeatureExtraction
 import pickle
 
 class Classify:
+    # TODO Perbaiki tujuan folder
     proc_pca = 'pca.sav'
     proc_lda = 'lda.sav'
 
@@ -27,14 +32,23 @@ class Classify:
 
     def klasifikasiCitraBanyak(self, folder, method):
         self.folder = folder
+        files = self.listFiles(folder)
         hasil = []
-        for fil in folder:
+        for fil in files:
             fe = FeatureExtraction(fil)
             fitur = fe.ekstraksifitur()
             jenis = self.klaf(fitur, method)
             hasil.append(jenis)
         
         return hasil
+
+    def listFiles(self, folder):
+        types = ('/*.jpg', '/*.png')
+        files = []
+        for tipe in types:
+            a = folder + tipe
+            files.extend(glob.glob(folder + tipe))
+        return files
 
     def klaf(self, fitur, method):
         fit = fitur

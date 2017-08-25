@@ -74,7 +74,7 @@ class GUI(Frame):
         labelPemisah = Label(self.parent, text = "-----------------------------------------").grid(sticky = W, columnspan = 3, row = 8, column = 0, pady = 5)
         labelHasil = Label(self.parent, text = "Hasil").grid(row = 9, column = 0)
         labelJumlah = Label(self.parent, text = "Jumlah Citra:").grid(sticky = W, row = 10, columnspan = 2, column = 0)
-        self.labelBasofil = Label(self.parent, text = "Jumlah Basofil:").grid(sticky = W, row = 11, column = 0, columnspan = 2)
+        labelBasofil = Label(self.parent, text = "Jumlah Basofil:").grid(sticky = W, row = 11, column = 0, columnspan = 2)
         labelEosinofil = Label(self.parent, text = "Jumlah Eosinofil:").grid(sticky = W, row = 12, column = 0, columnspan = 2)
         labelLimfosit = Label(self.parent, text = "Jumlah Limfosit:").grid(sticky = W, row = 13, column = 0, columnspan = 2)
         labelMonosit = Label(self.parent, text = "Jumlah Monosit:").grid(sticky = W, row = 14, column = 0, columnspan = 2)
@@ -87,8 +87,10 @@ class GUI(Frame):
 
     def ambilFolder(self, label):
         dlg = filedialog.askdirectory()
+        print(dlg)
         if dlg != '':
-            self.folderCitra = os.path.dirname(os.path.abspath(dlg))
+            self.folderCitra = dlg
+            # self.folderCitra = os.path.dirname(os.path.abspath(dlg))
             label.config(text = str(self.folderCitra))
             pass
 

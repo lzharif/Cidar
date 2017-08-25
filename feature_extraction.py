@@ -8,12 +8,14 @@ class FeatureExtraction:
 
     def __init__(self, c):
         # Masukkan citra ke dalam class
-        self.citra = c
+        self.citra = cv2.imread(c)
+        
         # Menandakan Fitur Ekstraksi Sedang Berjalan
         print('Ekstraksi fitur citra sedang dilakukan...')
 
     def ekstraksifitur(self):
         citra = self.citra
+        
         row = citra.shape[0]
         col = citra.shape[1]
         # Ekstraksi Kanal yang diperlukan
@@ -182,7 +184,7 @@ def ekstrakAbu(citra, gray):
     return cv2.bitwise_and(citra, gray)
 
 
-def rerataSD(citra, r, g, b): #TODO buat jadi integer, bukan array
+def rerataSD(citra, r, g, b):
     rer, sd = cv2.meanStdDev(citra)
     rerR, sdR = cv2.meanStdDev(r)
     rerG, sdG = cv2.meanStdDev(g)
@@ -225,7 +227,7 @@ def eccentricityCitra(kontur):
     myu11 = myu11 + mu['mu11']
 
     matriks = np.array([[myu20, myu11], [myu11, myu02]], dtype=np.float32) 
-    ret, eigenv, eigenvct = cv2.eigen(matriks) # TODO error: (-215) type == CV_32F || type == CV_64F
+    ret, eigenv, eigenvct = cv2.eigen(matriks) # error: (-215) type == CV_32F || type == CV_64F
     eigenv1 = eigenv[0, 0]
     eigenv2 = eigenv[1, 0]
 
