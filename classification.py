@@ -17,15 +17,15 @@ from feature_extraction import FeatureExtraction
 import pickle
 
 class Classify:
-    # TODO Perbaiki tujuan folder
-    proc_pca = 'pca.sav'
-    proc_lda = 'lda.sav'
+    scal = './Model/scale.sav'
+    proc_lda = './Model/lda.sav'
+    proc_pca = './Model/pca.sav'
 
-    model_dt = 'DT_noproc.sav'
-    model_knn = 'kNN_pca.sav'
-    model_nb = 'NB_lda.sav'
-    model_rf = 'RF_noproc.sav'
-    model_svm = 'SVM_pca.sav'
+    model_dt = './Model/DT_noproc.sav'
+    model_knn = './Model/kNN_noproc.sav'
+    model_nb = './Model/NB_lda.sav'
+    model_rf = './Model/RF_noproc.sav'
+    model_svm = './Model/SVM_pca.sav'
 
     def __init__(self):
         pass
@@ -33,11 +33,12 @@ class Classify:
     def klasifikasiCitraBanyak(self, folder, method):
         self.folder = folder
         files = self.listFiles(folder)
+        scale, proc, klas = self.loadModel(method)
         hasil = []
         for fil in files:
             fe = FeatureExtraction(fil)
             fitur = fe.ekstraksifitur()
-            jenis = self.klaf(fitur, method)
+            jenis = self.klaf(scale, fitur, proc, klas)
             hasil.append(jenis)
         
         return hasil
@@ -50,33 +51,33 @@ class Classify:
             files.extend(glob.glob(folder + tipe))
         return files
 
-    def klaf(self, fitur, method):
-        fit = fitur
-        hasil = 0
+    def loadModel(self, method):
+        scale = pickle.load(open(self.scal, 'rb'))
+        proc = None
+        klas = None
         if method == 'Decision Tree':
             klas = pickle.load(open(self.model_dt, 'rb'))
-            hasil = klas.predict(fit)
         elif method == 'kNN':
-            proc = pickle.load(open(self.proc_pca, 'rb'))
             klas = pickle.load(open(self.model_knn, 'rb'))
-            fit = proc.transform(fit)
-            hasil = klas.predict(fit)
+        elif method == 'Neural Network':
+            # TODO Buat fungsi buka model Neural Network
+            a = 1
         elif method == 'Naive Bayes':
             proc = pickle.load(open(self.proc_lda, 'rb'))
             klas = pickle.load(open(self.model_nb, 'rb'))
-            fit = proc.transform(fit)
-            hasil = klas.predict(fit)
         elif method == 'Random Forest':
             klas = pickle.load(open(self.model_rf, 'rb'))
-            hasil = klas.predict(fit)
         else:
             proc = pickle.load(open(self.proc_pca, 'rb'))
             klas = pickle.load(open(self.model_svm, 'rb'))
+        return scale, proc, klas
+
+    def klaf(self, scale, fitur, proc, klas):
+        fit = scale.transform(fitur)
+        hasil = 0
+        if proc == None:
+            hasil = klas.predict(fit)
+        else:
             fit = proc.transform(fit)
             hasil = klas.predict(fit)
-
-        return hasil
-
-
-
-
+        return hasil[0]

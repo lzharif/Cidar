@@ -47,23 +47,25 @@ def cariGrid(clsf, preproc, xtr, ytr, xte, yte, accu, std, test_accu):
     best_std = grid_search.cv_results_['std_test_score'][best_index]
     best_parameters = grid_search.best_params_
 
+    clsf = DecisionTreeClassifier(**best_parameters).fit(xtr, ytr)
+
     # Calculate test accuracy with optimized training
     test_optimized = grid_search.score(xte, yte)
 
     if preproc == 'noproc':
-        pickle.dump(grid_search, open(filename_noproc, 'wb'))
+        pickle.dump(clsf, open(filename_noproc, 'wb'))
         with open(filename_res_noproc, "w") as text_file:
             text_file.write("%f %f %f %f %f %f %s" % (accu, std, test_accu, best_accuracy, best_std, test_optimized, best_parameters))
     elif preproc == 'pca':
-        pickle.dump(grid_search, open(filename_pca, 'wb'))
+        pickle.dump(clsf, open(filename_pca, 'wb'))
         with open(filename_res_pca, "w") as text_file:
             text_file.write("%f %f %f %f %f %f %s" % (accu, std, test_accu, best_accuracy, best_std, test_optimized, best_parameters))
     elif preproc == 'lda':
-        pickle.dump(grid_search, open(filename_lda, 'wb'))
+        pickle.dump(clsf, open(filename_lda, 'wb'))
         with open(filename_res_lda, "w") as text_file:
             text_file.write("%f %f %f %f %f %f %s" % (accu, std, test_accu, best_accuracy, best_std, test_optimized, best_parameters))
     else:
-        pickle.dump(grid_search, open(filename_kpca, 'wb'))
+        pickle.dump(clsf, open(filename_kpca, 'wb'))
         with open(filename_res_kpca, "w") as text_file:
             text_file.write("%f %f %f %f %f %f %s" % (accu, std, test_accu, best_accuracy, best_std, test_optimized, best_parameters))
     

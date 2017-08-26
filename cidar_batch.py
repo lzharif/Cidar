@@ -29,8 +29,6 @@ class GUI(Frame):
 
         fileMenu = Menu(menubar)
 
-        # fileMenu.add_command(label="Buka Satuan", underline=0, command=lambda: self.tangkapCitraSatuan())
-        # fileMenu.add_command(label="Buka Banyak", underline=0, command=lambda: self.ambilFolder())
         fileMenu.add_command(label="Simpan Data", underline=0, command=lambda: self.simpanData())
 
         fileMenu.add_separator()
@@ -56,7 +54,7 @@ class GUI(Frame):
         
         tkvar = StringVar(self.parent)
         
-        choices = { 'Decision Tree','kNN','Naive Bayes','Random Forest', 'SVM'}
+        choices = { 'Decision Tree','kNN','Naive Bayes', 'Neural Network','Random Forest', 'SVM'}
         tkvar.set('Decision Tree') # set the default option
         
         popupMenu = OptionMenu(mainframe, tkvar, *choices)
@@ -72,13 +70,22 @@ class GUI(Frame):
 
         # Tempat nampilin hasil
         labelPemisah = Label(self.parent, text = "-----------------------------------------").grid(sticky = W, columnspan = 3, row = 8, column = 0, pady = 5)
-        labelHasil = Label(self.parent, text = "Hasil").grid(row = 9, column = 0)
-        labelJumlah = Label(self.parent, text = "Jumlah Citra:").grid(sticky = W, row = 10, columnspan = 2, column = 0)
-        labelBasofil = Label(self.parent, text = "Jumlah Basofil:").grid(sticky = W, row = 11, column = 0, columnspan = 2)
-        labelEosinofil = Label(self.parent, text = "Jumlah Eosinofil:").grid(sticky = W, row = 12, column = 0, columnspan = 2)
-        labelLimfosit = Label(self.parent, text = "Jumlah Limfosit:").grid(sticky = W, row = 13, column = 0, columnspan = 2)
-        labelMonosit = Label(self.parent, text = "Jumlah Monosit:").grid(sticky = W, row = 14, column = 0, columnspan = 2)
-        labelNetrofil = Label(self.parent, text = "Jumlah Netrofil:").grid(sticky = W, row = 15, column = 0, columnspan = 2)
+        labelHasil = Label(self.parent, text = "Hasil")
+        labelJumlah = Label(self.parent, text = "Jumlah Citra:")
+        labelBasofil = Label(self.parent, text = "Jumlah Basofil:")
+        labelEosinofil = Label(self.parent, text = "Jumlah Eosinofil:")
+        labelLimfosit = Label(self.parent, text = "Jumlah Limfosit:")
+        labelMonosit = Label(self.parent, text = "Jumlah Monosit:")
+        labelNetrofil = Label(self.parent, text = "Jumlah Netrofil:")
+
+        labelHasil.grid(row = 9, column = 0)
+        labelJumlah.grid(sticky = W, row = 10, columnspan = 2, column = 0)
+        labelBasofil.grid(sticky = W, row = 11, column = 0, columnspan = 2)
+        labelEosinofil.grid(sticky = W, row = 12, column = 0, columnspan = 2)
+        labelLimfosit.grid(sticky = W, row = 13, column = 0, columnspan = 2)
+        labelMonosit.grid(sticky = W, row = 14, column = 0, columnspan = 2)
+        labelNetrofil.grid(sticky = W, row = 15, column = 0, columnspan = 2)
+
 
         labelSep2 = Label(self.parent, text = "").grid(sticky = W, columnspan = 2, row = 5)
         labelTahap3 = Label(self.parent, text = "Tahap 3: Tekan jalankan").grid(sticky = E, row = 6)
@@ -99,18 +106,23 @@ class GUI(Frame):
             berkas = self.folderCitra
             clf = Classify()
             hasil_batch = clf.klasifikasiCitraBanyak(berkas, self.kecerdasan)
-            bas = hasil_batch.count(0)
-            eos = hasil_batch.count(1)
-            lim = hasil_batch.count(2)
-            mon = hasil_batch.count(3)
-            net = hasil_batch.count(4)
+            bas = hasil_batch.count(1)
+            eos = hasil_batch.count(2)
+            lim = hasil_batch.count(3)
+            mon = hasil_batch.count(4)
+            net = hasil_batch.count(5)
             banyak = len(hasil_batch)
+            rerBas = float("{0:.2f}".format(bas*100/banyak))
+            rerEos = float("{0:.2f}".format(eos*100/banyak))
+            rerLim = float("{0:.2f}".format(lim*100/banyak))
+            rerMon = float("{0:.2f}".format(mon*100/banyak))
+            rerNet = float("{0:.2f}".format(net*100/banyak))
             lblJumlah.config(text = "Jumlah Citra: " + str(banyak))
-            lblB.config(text = "Jumlah Basofil: " + str(bas) + " -> " + str(float(bas/banyak)))
-            lblE.config(text = "Jumlah Eosinofil: " + str(eos) + " -> " + str(float(eos/banyak)))
-            lblL.config(text = "Jumlah Limfosit: " + str(lim) + " -> " + str(float(lim/banyak)))
-            lblM.config(text = "Jumlah Monosit: " + str(mon) + " -> " + str(float(mon/banyak)))
-            lblN.config(text = "Jumlah Netrofil: " + str(net) + " -> " + str(float(net/banyak)))
+            lblB.config(text = "Jumlah Basofil: " + str(bas) + " -> " + str(rerBas))
+            lblE.config(text = "Jumlah Eosinofil: " + str(eos) + " -> " + str(rerEos))
+            lblL.config(text = "Jumlah Limfosit: " + str(lim) + " -> " + str(rerLim))
+            lblM.config(text = "Jumlah Monosit: " + str(mon) + " -> " + str(rerMon))
+            lblN.config(text = "Jumlah Netrofil: " + str(net) + " -> " + str(rerNet))
             
     def tangkapCitraSatuan(self):
         ftypes = [('Portable Network Graphics', '*.png'), ('JPEG', '*.jpg')]
@@ -153,7 +165,6 @@ class GUI(Frame):
 
 
 def main():
-    # Inisialisasi TensorBox dan TensorFlow
     global seGmentasi
     global seKlasifikasi
     root = Tk()

@@ -1,1 +1,1 @@
-0.749044 0.067907 0.850000 0.750000 0.075625 0.840000 {'criterion': 'entropy', 'min_samples_split': 4, 'max_depth': None, 'min_samples_leaf': 1, 'max_leaf_nodes': None}
+0.749044 0.067907 0.850000 0.750000 0.075625 0.840000 {'min_samples_split': 4, 'max_leaf_nodes': None, 'min_samples_leaf': 1, 'criterion': 'entropy', 'max_depth': None}
