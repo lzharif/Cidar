@@ -1,1 +1,1 @@
-0.718635 0.047805 0.670000 0.732500 0.073126 0.740000 {'min_samples_split': 2, 'max_leaf_nodes': 20, 'min_samples_leaf': 1, 'criterion': 'gini', 'max_depth': None}
+0.675780 0.044192 0.710000 0.712500 0.062779 0.720000 {'criterion': 'entropy', 'max_leaf_nodes': 20, 'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 2}

@@ -76,7 +76,7 @@ def cariGrid(clsf, preproc, xtr, ytr, xte, yte, accu, std, test_accu):
     print(test_optimized)
 
 # Importing the dataset
-dataset = pd.read_csv('100_auto.csv', sep=';')
+dataset = pd.read_csv('100_auto_python.csv', sep=';')
 X = dataset.iloc[:, 0:29].values
 y = dataset.iloc[:, 29].values
 

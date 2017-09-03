@@ -2,19 +2,30 @@ import cv2
 import numpy as np
 import math
 
+from helper import Helper
 
 class FeatureExtraction:
     citra = None
 
-    def __init__(self, c):
-        # Masukkan citra ke dalam class
-        self.citra = cv2.imread(c)
-        
+    def __init__(self):
         # Menandakan Fitur Ekstraksi Sedang Berjalan
         print('Ekstraksi fitur citra sedang dilakukan...')
 
-    def ekstraksifitur(self):
-        citra = self.citra
+    def ekstrakFiturBanyak(self, folder):
+        self.folder = folder
+        helper = Helper() 
+        files = helper.listFiles(folder)
+        fitur2 = []
+        for fil in files:
+            fe = FeatureExtraction()
+            fitur = fe.ekstraksifitur(fil)
+            fitur2.append(fitur)
+        
+        np.savetxt('Hasil Ekstraksi.txt', fitur2, delimiter=',')
+
+    def ekstraksifitur(self, c):
+        # Masukkan citra ke dalam class
+        citra = cv2.imread(c)        
         
         row = citra.shape[0]
         col = citra.shape[1]
@@ -114,9 +125,9 @@ def bagiVariabel(i, p):
 
 def konturHullCitra(plasma, inti):
     imgP, konturPlasma, hierarkiKonturPlasma = cv2.findContours(
-        plasma, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        plasma, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     imgI, konturInti, hierarkiKonturInti = cv2.findContours(
-        inti, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        inti, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     row = plasma.shape[0]
     col = plasma.shape[1]
 
@@ -128,18 +139,24 @@ def konturHullCitra(plasma, inti):
     citraAreaHullInti = np.zeros((row, col), dtype=np.uint8)
     hullPlasma = []
     hullInti = []
+    cv2.drawContours(citraKonturPlasma, konturPlasma, -1, (255, 255, 255), 1, 8)
+    cv2.drawContours(citraKonturInti, konturInti, -1, (255, 255, 255), 1, 8)
+    for cnt in konturPlasma:
+        hullPlasma = cv2.convexHull(cnt)
+        cv2.drawContours(citraHullPlasma, [hullPlasma], -1, (255, 255, 255), 1, 8)
+        cv2.fillPoly(citraAreaHullPlasma, [hullPlasma], (255, 255, 255), 8)
+        # hullPlasma.append(cv2.convexHull(konturPlasma[i]))
 
-    for i in range(len(konturPlasma)):
-        hullPlasma.append(cv2.convexHull(konturPlasma[i]))
+    for cnt in konturInti:
+        # hullInti.append(cv2.convexHull(konturInti[i]))
+        hullInti = cv2.convexHull(cnt)
+        cv2.drawContours(citraHullInti, [hullInti], -1, (255, 255, 255), 1, 8)
+        cv2.fillPoly(citraAreaHullInti, [hullInti], (255, 255, 255), 8)
 
-    for i in range(len(konturInti)):
-        hullInti.append(cv2.convexHull(konturInti[i]))
-        # hullInti[i] = cv2.convexHull(konturInti[i])
-
-    for i in range(len(konturPlasma)):
-        cv2.drawContours(citraKonturPlasma, konturPlasma,
-                         i, (255, 255, 255), 1, 8)
-        cv2.drawContours(citraHullPlasma, hullPlasma, i, (255, 255, 255), 1, 8)
+    # for i in range(len(konturPlasma)):
+    #     cv2.drawContours(citraKonturPlasma, konturPlasma,
+    #                      i, (255, 255, 255), 1, 8)
+    #     cv2.drawContours(citraHullPlasma, hullPlasma[i], i, (255, 255, 255), 1, 8)
         # titikHullPlasma = []
         # j = 0
         # abal = len(hullPlasma[0])
@@ -148,20 +165,20 @@ def konturHullCitra(plasma, inti):
         #     # titikHullPlasma[j] = hullPlasma[i,j]
         # jumlahHullPlasma = np.array(titikHullPlasma, np.int32)
         # cv2.fillPoly(citraAreaHullPlasma, jumlahHullPlasma, (255, 255, 255), 8)
-    cv2.fillPoly(citraAreaHullPlasma, konturPlasma, (255, 255, 255), 8)
+    # cv2.fillPoly(citraAreaHullPlasma, konturPlasma, (255, 255, 255), 8)
 
-    for i in range(len(konturInti)):
-        citraKonturInti = cv2.drawContours(
-            citraKonturInti, konturInti, i, (255, 255, 255), 1, 8)
-        citraHullInti = cv2.drawContours(
-            citraHullInti, hullInti, i, (255, 255, 255), 1, 8)
-        # titikHullInti[200] = None
-        # j = None
-        # for j in range(len(hullInti[i])):
-        #     titikHullInti[j] = hullInti[i, j]
-        # jumlahHullInti = np.array(titikHullInti, np.int32)
-        # cv2.fillPoly(citraAreaHullInti, jumlahHullInti, (255, 255, 255), 8)
-    cv2.fillPoly(citraAreaHullInti, konturInti, (255, 255, 255), 8)
+    # for i in range(len(konturInti)):
+    #     citraKonturInti = cv2.drawContours(
+    #         citraKonturInti, konturInti, i, (255, 255, 255), 1, 8)
+    #     citraHullInti = cv2.drawContours(
+    #         citraHullInti, hullInti, i, (255, 255, 255), 1, 8)
+    #     titikHullInti = []
+    #     j = None
+    #     for j in range(len(hullInti[i])):
+    #         titikHullInti[j] = hullInti[i, j]
+    #     jumlahHullInti = np.array(titikHullInti, np.int32)
+    #     cv2.fillPoly(citraAreaHullInti, jumlahHullInti, (255, 255, 255), 8)
+    # cv2.fillPoly(citraAreaHullInti, konturInti, (255, 255, 255), 8)
     return citraKonturPlasma, citraKonturInti, citraHullPlasma, citraHullInti, citraAreaHullPlasma, citraAreaHullInti, konturInti
 
 
