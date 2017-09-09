@@ -55,10 +55,16 @@ class FeatureExtraction:
         luasConvexInti = ekstrakPikselPutih(citraAreaHullInti)
         solidityPlasma = bagiVariabel(luasPlasma, luasConvexPlasma)
         solidityInti = bagiVariabel(luasInti, luasConvexInti)
-        rerataPlasma, rerataPlasmaR, rerataPlasmaG, rerataPlasmaB, sdPlasma = rerataSD(
-            citraModPlasmaFix, citraModPlasmaR, citraModPlasmaG, citraModPlasmaB)
-        rerataInti, rerataIntiR, rerataIntiG, rerataIntiB, sdInti = rerataSD(
-            citraModIntiFix, citraModIntiR, citraModIntiG, citraModIntiB)
+
+        # Fitur warna tidak digunakan dulu
+        # rerataPlasma, rerataPlasmaR, rerataPlasmaG, rerataPlasmaB, sdPlasma = rerataSD(
+        #     citraModPlasmaFix, citraModPlasmaR, citraModPlasmaG, citraModPlasmaB)
+        # rerataInti, rerataIntiR, rerataIntiG, rerataIntiB, sdInti = rerataSD(
+        #     citraModIntiFix, citraModIntiR, citraModIntiG, citraModIntiB)
+
+        sdPlasma = sdCitra(citraModPlasmaFix)
+        sdInti = sdCitra(citraModIntiFix)
+
         circularityPlasma = circularity(luasPlasma, kelilingPlasma)
         circularityInti = circularity(luasInti, kelilingInti)
         liLp = bagiVariabel(luasInti, luasPlasma)
@@ -72,8 +78,10 @@ class FeatureExtraction:
             citraPlasmaGray)
 
         # Simpan ke dalam list
-        fitur = [luasInti, kelilingInti, solidityInti, sdInti, circularityInti, rerataIntiR, rerataIntiG, rerataIntiB, entropiInti, energiInti, kontrasInti, homogenitasInti, luasPlasma, kelilingPlasma, solidityPlasma,
-                 sdPlasma, circularityPlasma, rerataPlasmaR, rerataPlasmaG, rerataPlasmaB, entropiPlasma, energiPlasma, kontrasPlasma, homogenitasPlasma, luasNormalInti, kelilingNormalInti, eccentricity, liLp, kiKp]
+        fitur = [luasInti, kelilingInti, solidityInti, sdInti, circularityInti, entropiInti, energiInti, kontrasInti, homogenitasInti, luasPlasma, kelilingPlasma, solidityPlasma,
+                 sdPlasma, circularityPlasma, entropiPlasma, energiPlasma, kontrasPlasma, homogenitasPlasma, luasNormalInti, kelilingNormalInti, eccentricity, liLp, kiKp]
+        # fitur = [luasInti, kelilingInti, solidityInti, sdInti, circularityInti, rerataIntiR, rerataIntiG, rerataIntiB, entropiInti, energiInti, kontrasInti, homogenitasInti, luasPlasma, kelilingPlasma, solidityPlasma,
+        #          sdPlasma, circularityPlasma, rerataPlasmaR, rerataPlasmaG, rerataPlasmaB, entropiPlasma, energiPlasma, kontrasPlasma, homogenitasPlasma, luasNormalInti, kelilingNormalInti, eccentricity, liLp, kiKp]
 
         # Cetak Hasil Ekstraksi Fitur
         print("Legit lah")
@@ -200,6 +208,11 @@ def ambangWarnaCitra(citra, r, g, b):
 def ekstrakAbu(citra, gray):
     return cv2.bitwise_and(citra, gray)
 
+
+def sdCitra(citra):
+    rer, sd = cv2.meanStdDev(citra)
+    sD = float(sd[0])
+    return sD
 
 def rerataSD(citra, r, g, b):
     rer, sd = cv2.meanStdDev(citra)

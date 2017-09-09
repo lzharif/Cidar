@@ -26,7 +26,7 @@ class Classify:
 
     model_dt = './Model/DT_noproc.sav'
     model_knn = './Model/kNN_noproc.sav'
-    model_nb = './Model/NB_pca.sav'
+    model_nb = './Model/NB_lda.sav' # awalnya './Model/NB_pca.sav'
     model_rf = './Model/RF_noproc.sav'
     model_svm = './Model/SVM_noproc.sav'
 
@@ -46,6 +46,19 @@ class Classify:
         hasil = self.klaf(scale, fitur_banyak, proc, method, klas)
         
         return hasil
+
+    def klasifikasiTeks(self, folder, method):
+        self.folder = folder
+        berkas_teks = open(folder + "/Hasil Ekstraksi.txt", "r")
+        fitur_banyak = []
+        hasil = []
+        if berkas_teks != None:
+            fitur_banyak = np.loadtxt(berkas_teks,delimiter=',')
+            scale, proc, klas = self.loadModel(method)
+            hasil = self.klaf(scale, fitur_banyak, proc, method, klas)
+        
+            return hasil
+        
 
     def ambilConfusionMatrix(self, folder, prediksi):
         self.folder = folder
@@ -110,7 +123,7 @@ class Classify:
                                                 n_classes=5,  # banyak kelas, dalam darah ada 5
                                                 model_dir= self.model_fol)
         elif method == 'Naive Bayes':
-            proc = pickle.load(open(self.proc_pca, 'rb'))
+            proc = pickle.load(open(self.proc_lda, 'rb')) # awalnya self.proc_pca
             klas = pickle.load(open(self.model_nb, 'rb'))
         elif method == 'Random Forest':
             klas = pickle.load(open(self.model_rf, 'rb'))

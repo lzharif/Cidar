@@ -44,7 +44,7 @@ class GUI(Frame):
 
         labelFolder = Label(self.parent, text = "Belum pilih folder")
         buttonPilihFolder = Button(self.parent, text = "Pilih Folder", command = lambda: self.ambilFolder(labelFolder)).grid(sticky = W, row = 1, column = 0)
-        buttonPilihFolder = Button(self.parent, text = "Ekstraksi Banyak", command = lambda: self.ekstrakBanyak()).grid(sticky = W, row = 2, column = 0)
+        buttonEkstrakBanyak = Button(self.parent, text = "Ekstraksi Banyak", command = lambda: self.ekstrakBanyak()).grid(sticky = W, row = 2, column = 0)
         labelFolder.grid(sticky = W, row = 1, column = 1, columnspan = 5)
         labelSep = Label(self.parent, text = "").grid(sticky = W, columnspan = 2, row = 2)
         labelTahap2 = Label(self.parent, text = "Tahap 2: Pilih metode kecerdasan buatan").grid(sticky = W, columnspan = 2, row = 3)
@@ -95,6 +95,7 @@ class GUI(Frame):
         labelSep2 = Label(self.parent, text = "").grid(sticky = W, columnspan = 2, row = 5)
         labelTahap3 = Label(self.parent, text = "Tahap 3: Tekan jalankan").grid(sticky = E, row = 6)
         buttonJalan = Button(self.parent, text = "Jalankan", command = lambda: self.olahBanyak(labelJumlah, labelBasofil, labelEosinofil, labelLimfosit, labelMonosit, labelNetrofil, labelPhoto)).grid(sticky = W, row = 7, column = 0)
+        buttonEkstrakBanyak = Button(self.parent, text = "Olah Teks", command = lambda: self.klasifikasiTeks(labelJumlah, labelBasofil, labelEosinofil, labelLimfosit, labelMonosit, labelNetrofil, labelPhoto)).grid(sticky = W, row = 7, column = 1)
 
     def ambilFolder(self, label):
         dlg = filedialog.askdirectory()
@@ -161,6 +162,40 @@ class GUI(Frame):
             # label.image = fres
             # label.pack(side="left", expand="no")
     
+    def klasifikasiTeks(self, lblJumlah, lblB, lblE, lblL, lblM, lblN, lblPhoto):            
+        dlg = filedialog.askdirectory()
+        print(dlg)
+        if dlg != '':
+            self.folderCitra = dlg
+            berkas = self.folderCitra
+            clf = Classify()
+            hasil_batch = clf.klasifikasiTeks(berkas, self.kecerdasan)
+            bas = (hasil_batch == 0).sum()
+            eos = (hasil_batch == 1).sum()
+            lim = (hasil_batch == 2).sum()
+            mon = (hasil_batch == 3).sum()
+            net = (hasil_batch == 4).sum()
+            banyak = len(hasil_batch)
+
+            rerBas = float("{0:.2f}".format(bas*100/banyak))
+            rerEos = float("{0:.2f}".format(eos*100/banyak))
+            rerLim = float("{0:.2f}".format(lim*100/banyak))
+            rerMon = float("{0:.2f}".format(mon*100/banyak))
+            rerNet = float("{0:.2f}".format(net*100/banyak))
+            lblJumlah.config(text = "Jumlah Citra: " + str(banyak))
+            lblB.config(text = "Jumlah Basofil: " + str(bas) + " -> " + str(rerBas))
+            lblE.config(text = "Jumlah Eosinofil: " + str(eos) + " -> " + str(rerEos))
+            lblL.config(text = "Jumlah Limfosit: " + str(lim) + " -> " + str(rerLim))
+            lblM.config(text = "Jumlah Monosit: " + str(mon) + " -> " + str(rerMon))
+            lblN.config(text = "Jumlah Netrofil: " + str(net) + " -> " + str(rerNet))
+
+            # Baca gambar confusion matrix
+            clf.ambilConfusionMatrix(self.folderCitra, hasil_batch)
+            image_conf = Image.open(self.folderCitra + '/confusion_matrix.png')
+            if image_conf != None:
+                lblPhoto.config(image = image_conf)
+            
+            pass
     def ekstrakBanyak(self):
         dlg = filedialog.askdirectory()
         print(dlg)

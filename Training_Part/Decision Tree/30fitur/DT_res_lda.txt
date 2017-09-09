@@ -1,0 +1,1 @@
+0.678058 0.046067 0.630000 0.702500 0.079586 0.760000 {'criterion': 'gini', 'min_samples_leaf': 5, 'min_samples_split': 20, 'max_leaf_nodes': None, 'max_depth': None}

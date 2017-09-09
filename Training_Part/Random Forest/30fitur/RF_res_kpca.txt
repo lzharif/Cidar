@@ -1,0 +1,1 @@
+0.742983 0.050188 0.740000 0.772500 0.059609 0.750000 {'min_samples_split': 2, 'min_samples_leaf': 1, 'n_estimators': 20, 'bootstrap': True, 'max_depth': None, 'criterion': 'entropy', 'max_features': 3}

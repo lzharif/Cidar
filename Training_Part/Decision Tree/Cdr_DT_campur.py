@@ -14,23 +14,27 @@ import pickle
 from sklearn.model_selection import GridSearchCV
 
 # Name
-filename_noproc = 'SVM_noproc.sav'
-filename_pca = 'SVM_pca.sav'
-filename_lda = 'SVM_lda.sav'
-filename_kpca = 'SVM_kpca.sav'
+filename_noproc = 'DT_noproc.sav'
+filename_pca = 'DT_pca.sav'
+filename_lda = 'DT_lda.sav'
+filename_kpca = 'DT_kpca.sav'
 filename_scale = 'scale.sav'
 filename_dr_pca = 'pca.sav'
 filename_dr_lda = 'lda.sav'
 filename_dr_kpca = 'kpca.sav'
-filename_res_noproc = 'SVM_res_noproc.txt'
-filename_res_pca = 'SVM_res_pca.txt'
-filename_res_lda = 'SVM_res_lda.txt'
-filename_res_kpca = 'SVM_res_kpca.txt'
+filename_res_noproc = 'DT_res_noproc.txt'
+filename_res_pca = 'DT_res_pca.txt'
+filename_res_lda = 'DT_res_lda.txt'
+filename_res_kpca = 'DT_res_kpca.txt'
 
 # Grid Searching with Parallel Computing
 def cariGrid(clsf, preproc, xtr, ytr, xte, yte, accu, std, test_accu):
-    parameters = [{'C': [0.1, 1, 10, 100, 1000], 'kernel': ['linear']},
-                  {'C': [0.1, 1, 10, 100, 1000], 'kernel': ['rbf'], 'gamma': [0.5, 0.2, 0.1, 0.05, 0.01, 0.001, 0.0001]}]
+    parameters = {"criterion": ["gini", "entropy"],
+              "min_samples_split": [2, 4, 10, 20, 30],
+              "max_depth": [None, 2, 5, 10, 15, 20],
+              "min_samples_leaf": [1, 5, 10, 20],
+              "max_leaf_nodes": [None, 5, 10, 15, 20]
+              }
     grid_search = GridSearchCV(estimator=clsf,
                                param_grid=parameters,
                                scoring='accuracy',
@@ -43,7 +47,7 @@ def cariGrid(clsf, preproc, xtr, ytr, xte, yte, accu, std, test_accu):
     best_std = grid_search.cv_results_['std_test_score'][best_index]
     best_parameters = grid_search.best_params_
 
-    clsf = SVC(**best_parameters).fit(xtr, ytr)
+    clsf = DecisionTreeClassifier(**best_parameters).fit(xtr, ytr)
 
     # Calculate test accuracy with optimized training
     test_optimized = grid_search.score(xte, yte)
@@ -71,9 +75,9 @@ def cariGrid(clsf, preproc, xtr, ytr, xte, yte, accu, std, test_accu):
     print(test_optimized)
 
 # Importing the dataset
-dataset = pd.read_csv('100_auto_python.csv', sep=';')
-X = dataset.iloc[:, 0:29].values
-y = dataset.iloc[:, 29].values
+dataset = pd.read_csv('campur_auto_python.csv', sep=';')
+X = dataset.iloc[:, 0:23].values
+y = dataset.iloc[:, 23].values
 
 # Splitting the dataset into the Training set and Test set
 from sklearn.cross_validation import train_test_split
@@ -112,8 +116,8 @@ for i in preprocess:
         pickle.dump(kpca, open(filename_dr_kpca, 'wb'))
 
     # Fitting classifier to the Training set
-    from sklearn.svm import SVC
-    classifier = SVC(kernel='rbf', random_state=0)
+    from sklearn.tree import DecisionTreeClassifier
+    classifier = DecisionTreeClassifier(criterion= 'entropy', random_state = 0)
     classifier.fit(X_train, y_train)
 
     # Applying k-Fold Cross Validation
