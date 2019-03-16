@@ -1,0 +1,8 @@
+glob
+matplotlib
+numpy
+opencv-contrib-python
+pickle
+scikit-learn
+tensorflow
+tkinter

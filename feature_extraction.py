@@ -4,6 +4,7 @@ import math
 
 from helper import Helper
 
+# Kelas untuk melakukan ekstraksi fitur pada citra
 class FeatureExtraction:
     citra = None
 
@@ -11,6 +12,7 @@ class FeatureExtraction:
         # Menandakan Fitur Ekstraksi Sedang Berjalan
         print('Ekstraksi fitur citra sedang dilakukan...')
 
+    # Fungsi untuk mengekstrak fitur dari banyak citra sekaligus
     def ekstrakFiturBanyak(self, folder):
         self.folder = folder
         helper = Helper() 
@@ -23,12 +25,13 @@ class FeatureExtraction:
         
         np.savetxt('Hasil Ekstraksi.txt', fitur2, delimiter=',')
 
+    # Fungsi untuk mengekstrak citra secara satuan
     def ekstraksifitur(self, c):
         # Masukkan citra ke dalam class
-        citra = cv2.imread(c)        
-        
+        citra = cv2.imread(c)                
         row = citra.shape[0]
         col = citra.shape[1]
+
         # Ekstraksi Kanal yang diperlukan
         citraH, citraS, citraV = ekstrakPisahCitra(citra, "hsv")
         citraR, citraG, citraB = ekstrakPisahCitra(citra, "rgb")
@@ -92,6 +95,7 @@ class FeatureExtraction:
     def __del__(self):
         print('Proses ekstraksi fitur selesai.')
 
+# Fungsi untuk memisahkan citra ke channel HSV atau RGB
 def ekstrakPisahCitra(citra, mode):
     a = citra
     b = citra
@@ -104,12 +108,13 @@ def ekstrakPisahCitra(citra, mode):
         a, b, c = cv2.split(citra)
     return a, b, c
 
-
+# Fungsi untuk konversi citra ke abu-abu
 def ubahCitraGray(citra):
     return cv2.cvtColor(citra, cv2.COLOR_BGR2GRAY)
 
-
+# Fungsi untuk mendapatkan citra ambang plasma dan inti
 def ambangCitra(citraH, citraS, citraV):
+    # TODO buat fungsi penentuan nilai HSV secara otomatis, agar lebih optimal
     tPlasmaH = 130
     tPlasmaS = 27
     tPlasmaV = 62
@@ -122,15 +127,15 @@ def ambangCitra(citraH, citraS, citraV):
     ambangPlasmaHasil = cv2.bitwise_and(ambangPlasmaV, ambangPlasmaHasil)
     return ambangPlasmaHasil, ambangIntiHasil
 
-
+# Fungsi untuk menghitung jumlah piksel putih
 def ekstrakPikselPutih(citra):
     return cv2.countNonZero(citra)
 
-
+# Fungsi untuk membagi dua variabel
 def bagiVariabel(i, p):
     return float(i / p)
 
-
+# Fungsi untuk mengambil kontur hull
 def konturHullCitra(plasma, inti):
     imgP, konturPlasma, hierarkiKonturPlasma = cv2.findContours(
         plasma, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -189,7 +194,7 @@ def konturHullCitra(plasma, inti):
     # cv2.fillPoly(citraAreaHullInti, konturInti, (255, 255, 255), 8)
     return citraKonturPlasma, citraKonturInti, citraHullPlasma, citraHullInti, citraAreaHullPlasma, citraAreaHullInti, konturInti
 
-
+# Fungsi untuk mengambil detail citra
 def detailCitra(plasma, inti, v):
     citraModPlasma = cv2.bitwise_not(inti)
     citraModPlasma = cv2.bitwise_and(citraModPlasma, plasma)
@@ -197,23 +202,24 @@ def detailCitra(plasma, inti, v):
     citraModIntiFix = cv2.bitwise_and(inti, v)
     return citraModPlasmaFix, citraModIntiFix, citraModPlasma
 
-
+# Fungsi untuk mengekstrak citra berdasarkna nilai ambang batas
 def ambangWarnaCitra(citra, r, g, b):
     hasilR = cv2.bitwise_and(citra, r)
     hasilG = cv2.bitwise_and(citra, g)
     hasilB = cv2.bitwise_and(citra, b)
     return hasilR, hasilG, hasilB
 
-
+# Fungsi untuk mengekstrak citra hitam putih
 def ekstrakAbu(citra, gray):
     return cv2.bitwise_and(citra, gray)
 
-
+# Fungsi untuk menghitung standar deviasi citra
 def sdCitra(citra):
     rer, sd = cv2.meanStdDev(citra)
     sD = float(sd[0])
     return sD
 
+# Fungsi untuk menghitung rerata citra
 def rerataSD(citra, r, g, b):
     rer, sd = cv2.meanStdDev(citra)
     rerR, sdR = cv2.meanStdDev(r)
@@ -226,17 +232,17 @@ def rerataSD(citra, r, g, b):
     sD = float(sd[0])
     return rerata, rerataR, rerataG, rerataB, sD
 
-
+# Fungsi untuk menghitung tingkat kebulatan
 def circularity(l, k):
     return 4 * math.pi * l / pow(k, 2)
 
-
+# Fungsi untuk mendapatkan luas dan keliling yang ternormalisasi
 def normalisasiInti(l, k, c, r):
     luasNormal = float(l / (c * r))
     kelilingNormal = float(k / (2 * (c + r)))
     return luasNormal, kelilingNormal
 
-
+# Fungsi untuk menghitung eccentricity
 def eccentricityCitra(kontur):
     luasKontur = 0
     terluasKontur = 0
@@ -268,7 +274,8 @@ def eccentricityCitra(kontur):
         eccentricityCitra = eigenv1 / eigenv2
     return eccentricityCitra
 
-
+# Fungsi untuk menghitung skor tekstur citra
+# Tekstur yang dihitung yaitu entropi, energi, kontras, dan homogenitas
 def teksturCitra(citra):
     row = citra.shape[0]
     col = citra.shape[1]

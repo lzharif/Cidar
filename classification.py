@@ -18,7 +18,21 @@ from sklearn.svm import SVC
 from feature_extraction import FeatureExtraction
 from helper import Helper
 
+# Classify adalah kelas yang melaksanakan fungsi klasifikasi
 class Classify:
+    # Inisialisasi model kecerdasan buatan yang telah dilatih sebelumnya
+    # Singkatan praproses:
+    # SCAL = Standard Scaler
+    # LDA = Linear Discriminant Analysis
+    # PCA = Principal Component Analysis
+
+    # Singkatan algoritma kecerdasan buatan:
+    # DT = Decision Tree
+    # KNN = K-Nearest Neighbour
+    # NB = Naive Bayes
+    # RF = Random Forest
+    # SVM = Support Vector Machine
+
     model_fol = './Model'
     scal = './Model/scale.sav'
     proc_lda = './Model/lda.sav'
@@ -29,10 +43,14 @@ class Classify:
     model_nb = './Model/NB_lda.sav' # awalnya './Model/NB_pca.sav'
     model_rf = './Model/RF_noproc.sav'
     model_svm = './Model/SVM_noproc.sav'
+    model_svm_giemsa = './Model/SVM_noproc_g.sav'
+    model_svm_wright = './Model/SVM_noproc_w.sav'
 
     def __init__(self):
         pass
 
+    # Fungsi untuk mengklasifikasi banyak citra sekaligus
+    # Citra yang dapat diklasifikasi hanya yang sudah di crop saja
     def klasifikasiCitraBanyak(self, folder, method):
         self.folder = folder
         helper = Helper()
@@ -47,6 +65,11 @@ class Classify:
         
         return hasil
 
+    # Fungsi untuk mengklasifikasi data citra sel darah putih berformat teks
+    # Berkas teks disimpan dengan nama "Hasil Ekstraksi.txt"
+    # Formatnya adalah desimal menggunakan titik (.) dan pemisah koma (,), tidak ada headernya
+    # Contoh:
+    # 2034,20.4,133,1, ... , 15.45
     def klasifikasiTeks(self, folder, method):
         self.folder = folder
         berkas_teks = open(folder + "/Hasil Ekstraksi.txt", "r")
@@ -59,7 +82,14 @@ class Classify:
         
             return hasil
         
-
+    # Fungsi untuk menghitung dan menampilkan confusion matrix
+    # Fungsi ini membutuhkan "truth.txt" yang berisi kelas citra
+    # Kelas citra basofil, eosinofil, limfosit, monosit, neutrofil, dan stab berurut dari 0-5
+    # Hanya pada citra dengan pewarnaan giemsa yang tidak mencantumkan basofil, sehingga urutan kelas 0-4
+    # Contoh:
+    # 5,1,0,0,4
+    #
+    # Tandanya baris pertama adalah stab, kedua eosinofil, dan kelima adalah neutrofil
     def ambilConfusionMatrix(self, folder, prediksi):
         self.folder = folder
         truth_file = open(folder + "/truth.txt", "r")
@@ -69,9 +99,16 @@ class Classify:
             conf = confusion_matrix(y_true_val, prediksi)
 
             plt.figure()
-            self.plot_confusion_matrix(conf, classes=[0, 1, 2, 3, 4], title='Confusion matrix, without normalization')
+            classes = None
+            apakahWright = False
+            if apakahWright == True:
+                self.plot_confusion_matrix(conf, classes=[0, 1, 2, 3, 4, 5], title='Confusion matrix, without normalization')
+            else:
+                self.plot_confusion_matrix(conf, classes=[0, 1, 2, 3, 4], title='Confusion matrix, without normalization')
             plt.show()
 
+    # Fungsi bantuan untuk membuat grafik confusion matrix
+    # Digunakan pada fungsi ambilConfusionMatrix()
     def plot_confusion_matrix(self, cm, classes,
                           normalize=False,
                           title='Confusion matrix',
@@ -106,6 +143,8 @@ class Classify:
         plt.ylabel('True label')
         plt.xlabel('Predicted label')
 
+    # Fungsi untuk memuat model terpilih yang telah tersimpan sebelumnya
+    # Semua model harus disimpan di folder ./Model
     def loadModel(self, method):
         scale = pickle.load(open(self.scal, 'rb'))
         proc = None
@@ -127,10 +166,16 @@ class Classify:
             klas = pickle.load(open(self.model_nb, 'rb'))
         elif method == 'Random Forest':
             klas = pickle.load(open(self.model_rf, 'rb'))
+        elif method == 'SVM Giemsa':
+            klas = pickle.load(open(self.model_svm_giemsa, 'rb'))
+        elif method == 'SVM Wright':
+            klas = pickle.load(open(self.model_svm_wright, 'rb'))
         else:
             klas = pickle.load(open(self.model_svm, 'rb'))
         return scale, proc, klas
 
+    # Fungsi utama dari kelas Classify()
+    # Berisi urutan eksekusi fungsi pada kelas ini
     def klaf(self, scale, fitur, proc, method, klas):
         fitur_scaled = []
         fitur_fixed = []

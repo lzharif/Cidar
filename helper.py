@@ -1,6 +1,9 @@
 import glob
 
+# Kelas penolong
 class Helper:
+
+	# Fungsi untuk melihat isi dari suatu folder
     def listFiles(self, folder):
         types = ('/*.jpg', '/*.png')
         files = []
